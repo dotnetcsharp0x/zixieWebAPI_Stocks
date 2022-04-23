@@ -16,5 +16,9 @@ namespace zixieWebAPI_Stocks.Data
         }
 
         public DbSet<zixieWebAPI_Stocks.Models.Shares> Shares { get; set; }
+        public DbSet<zixieWebAPI_Stocks.Models.Cryptos> Cryptos { get; set; }
+        public DbSet<zixieWebAPI_Stocks.Models.Exchanges> Exchange { get; set; }
+        public DbSet<zixieWebAPI_Stocks.Models.Symbols> Symbol { get; set; }
+        public DbSet<zixieWebAPI_Stocks.Models.Prices> Prices { get; set; }
     }
 }

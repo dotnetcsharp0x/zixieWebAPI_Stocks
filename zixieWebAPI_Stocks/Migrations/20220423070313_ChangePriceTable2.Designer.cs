@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using zixieWebAPI_Stocks.Data;
 
@@ -11,9 +12,10 @@ using zixieWebAPI_Stocks.Data;
 namespace zixieWebAPI_Stocks.Migrations
 {
     [DbContext(typeof(zixieContext))]
-    partial class zixieContextModelSnapshot : ModelSnapshot
+    [Migration("20220423070313_ChangePriceTable2")]
+    partial class ChangePriceTable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,8 +89,8 @@ namespace zixieWebAPI_Stocks.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 

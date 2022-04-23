@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using zixieWebAPI_Stocks.Data;
 
@@ -11,9 +12,10 @@ using zixieWebAPI_Stocks.Data;
 namespace zixieWebAPI_Stocks.Migrations
 {
     [DbContext(typeof(zixieContext))]
-    partial class zixieContextModelSnapshot : ModelSnapshot
+    [Migration("20220423070005_ChangePriceTable")]
+    partial class ChangePriceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,30 +71,6 @@ namespace zixieWebAPI_Stocks.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Exchange");
-                });
-
-            modelBuilder.Entity("zixieWebAPI_Stocks.Models.Prices", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Date")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Figi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Prices");
                 });
 
             modelBuilder.Entity("zixieWebAPI_Stocks.Models.Shares", b =>
