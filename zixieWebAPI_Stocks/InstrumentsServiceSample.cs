@@ -41,9 +41,9 @@ public class InstrumentsServiceSample
         //    }
         //        //sh.Add(share.Name,share.Ticker,share.Currency,share.DivYieldFlag,share.Exchange,share.Figi,share.IpoDate,share.Isin,share.BuyAvailableFlag,share.Name,share.Nominal,share.Sector);
         //    }
-            return shares;
+        return shares;
     }
-        public async Task<string> GetInstrumentsDescriptionAsync(CancellationToken cancellationToken)
+    public async Task<string> GetInstrumentsDescriptionAsync(CancellationToken cancellationToken)
     {
         var shares = await _service.SharesAsync(cancellationToken);
         var etfs = await _service.EtfsAsync(cancellationToken);

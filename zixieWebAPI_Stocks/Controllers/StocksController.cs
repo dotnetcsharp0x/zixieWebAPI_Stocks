@@ -44,27 +44,46 @@ namespace zixieWebAPI_Stocks.Controllers
         [HttpGet("GetPrices/LoadPrices")]
         public async Task<IActionResult> LoadPrices(CancellationToken stoppingToken)
         {
+            int cnt = 0;
             List<Prices> prices = new List<Prices>();
             //var instrumentsPrices = await new InstrumentsServiceSample(_investApi.Instruments).get
-            var figies = (from s in _context.Shares select s);
+            var figies = (from s in _context.Shares select s);//.Take(15);
             //string[] get_prices = new string[figies.Count()];
             Prices price_insert = new Prices();
-            string path = "Logs.log";
+            string path = "Logs\\" + DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day + DateTime.Now.Hour + ".log";
             GetOrderBookRequest req = new GetOrderBookRequest();
 
             try
             {
                 foreach (var s in figies)
                 {
-                    Thread.Sleep(300);
+
                     //get_prices.Append(s.Figi);
                     req.Depth = 1;
                     req.Figi = s.Figi;
-                    var last_prices = _investApi.MarketData.GetOrderBook(req);
-                    
-                    var price = last_prices.LastPrice;
-                    //if (last_prices != null)
-                    //{
+                    var last_prices = new GetOrderBookResponse();
+                    try
+                    {
+                        last_prices = _investApi.MarketData.GetOrderBook(req);
+                        throw new NotSupportedException();
+                    }
+                    catch (RpcException ex)
+                    {
+                        Console.WriteLine(ex.StatusCode);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+
+                    if (last_prices.Figi.Length > 0)
+                    {
+                        Console.WriteLine($"last_prices.Figi: {last_prices.Figi}");
+
+                        Thread.Sleep(1010);
+                        var price = last_prices.LastPrice;
+                        //if (last_prices != null)
+                        //{
                         prices.Add(new Prices
                         {
                             Figi = s.Figi
@@ -73,48 +92,61 @@ namespace zixieWebAPI_Stocks.Controllers
                         ,
                             Date = DateTime.Now.ToString()
                         });
-                    _context.Add(new Prices
+                        _context.Add(new Prices
+                        {
+                            Figi = req.Figi,
+                            Date = DateTime.Now.ToString(),
+                            Price = float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat)
+                        });
+                        //price_insert.Figi = s.Figi;
+                        //price_insert.Price = float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat);
+                        //price_insert.Date = DateTime.Now.ToString();
+                        //_context.Add(price_insert);
+                        //_context.SaveChanges();
+                        //}
+                        //price_insert.Price = float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat);
+                        //price_insert.Date = DateTime.Now.ToString();
+                        using (StreamWriter writer = new StreamWriter(path, true))
+                        {
+                            Console.WriteLine(cnt + " | " + DateTime.Now.ToString() + " | " + s.Figi + " | " + float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat) + " | ");
+                            cnt = cnt + 1;
+                            await writer.WriteLineAsync(cnt + " | " + DateTime.Now.ToString() + " | " + s.Figi + " | " + float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat) + " | ");
+                        }
+
+
+                    }
+                    else
                     {
-                        Figi = s.Figi,
-                        Date = DateTime.Now.ToString(),
-                        Price = float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat)
-                    });
-                    //price_insert.Figi = s.Figi;
-                    //price_insert.Price = float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat);
-                    //price_insert.Date = DateTime.Now.ToString();
-                    //_context.Add(price_insert);
-                    //_context.SaveChanges();
-                    //}
-                    //price_insert.Price = float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat);
-                    //price_insert.Date = DateTime.Now.ToString();
-                    using (StreamWriter writer = new StreamWriter(path, true))
-                    {
-                        await writer.WriteLineAsync(DateTime.Now.ToString() + " | " + s.Figi + " | " + float.Parse((price.Units.ToString() + "." + price.Nano.ToString()), CultureInfo.InvariantCulture.NumberFormat) + " | ");
+                        Console.WriteLine($"ERROR: {s.Figi}");
                     }
                 }
                 //var test =  prices;
                 //foreach (var p in prices)
                 //{
-                   
+
                 //}
                 _context.SaveChanges();
+                return Ok(prices);
             }
-            catch (Exception ex)
+
+
+            catch (Exception)
             {
-                var test = ex.Message + " | " + prices;
+                //var test = ex.Message + " | " + prices;
                 //using (StreamWriter writer = new StreamWriter(path, true))
                 //{
                 //    await writer.WriteLineAsync(DateTime.Now.ToString() + " | " + ex.Message.ToString() + " | " + s);
                 //    //await writer.WriteAsync("4,5");
                 //}
             }
+
             finally
             {
 
             }
             return Ok(prices);
         }
-         
+
         [HttpGet("GetStock/LoadStocks")]
         public async Task<IActionResult> LoadStocks(CancellationToken stoppingToken)
         {
@@ -165,7 +197,7 @@ namespace zixieWebAPI_Stocks.Controllers
             var response = await client.ExecuteAsync(request);
             List<Exchanges> exchange = new List<Exchanges>();
             var objects = JArray.Parse(response.Content);
-         
+
             foreach (var i in objects)
             {
                 exchange.Add(new Exchanges { Name = i.ToString() });

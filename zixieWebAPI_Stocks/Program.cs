@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<zixieContext>(options =>
 
 options.UseSqlServer(builder.Configuration.GetConnectionString("zixieContext")));
-builder.Services.AddInvestApiClient((_, settings) => settings.AccessToken = "");
+builder.Services.AddInvestApiClient((_, settings) => settings.AccessToken = "t.5vC9A1M_UoeJ4yr_7eczcs9gI-X7YJJtdqsWnyMXcrky_LqzueblUJhVYzmcMOPmz7ZqbANp8_9r4qma5D9UBA");
 builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
